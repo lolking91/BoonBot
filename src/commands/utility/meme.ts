@@ -1,10 +1,25 @@
-import SlashCommandBuilder, {AttachmentBuilder} from 'discord.js';
-import Canvas from '@napi-rs/canvas';
-import {MemeResponse} from '../../types/meme-types'
+const {SlashCommandBuilder, AttachmentBuilder} = require('discord.js');
+const {Canvas} = require('@napi-rs/canvas');
 
 module.exports = {
     data: new SlashCommandBuilder().setName('meme').setDescription('Responds with a random meme'),
     async execute(interaction: { reply: (arg0: string) => any; }) {
+
+        type MemeResponse = {
+            success: boolean,
+            data: {
+                memes: Meme[]
+            }
+        }
+
+        type Meme = {
+            id: number,
+            name: string,
+            url: string,
+            width: number,
+            height: number
+            box_count: number
+        }
 
         const memeList = await fetch('https://api.imgflip.com/get_memes')
             .then(res => res.json())

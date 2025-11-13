@@ -40,7 +40,7 @@ function getTimeAsFractionText(date: Date = new Date()): string {
         return `halb ${nextHourWord}`;
     }
 
-    return `${numeratorWord} ${denomWord} ${nextHourWord}`;
+    return `Rob: "${numeratorWord} ${denomWord} ${nextHourWord}" (${hours}:${minutes})`;
 }
 
 // Hilfsfunktionen

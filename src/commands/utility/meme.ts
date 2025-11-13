@@ -1,5 +1,5 @@
 const {SlashCommandBuilder, AttachmentBuilder} = require('discord.js');
-const {Canvas} = require('@napi-rs/canvas');
+const Canvas = require('@napi-rs/canvas');
 
 module.exports = {
     data: new SlashCommandBuilder().setName('meme').setDescription('Responds with a random meme'),

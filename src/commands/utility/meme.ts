@@ -2,36 +2,30 @@ const {SlashCommandBuilder, AttachmentBuilder} = require('discord.js');
 const Canvas = require('@napi-rs/canvas');
 
 module.exports = {
-    data: new SlashCommandBuilder().setName('meme').setDescription('Responds with a random meme'),
-    async execute(interaction: { reply: (arg0: string) => any; }) {
+    data: new SlashCommandBuilder().setName('meme')
+        .setDescription('Responds with a random meme')
+        .addStringOption((option: any) => option.setName('tags').setDescription('tags which describes a meme').setRequired(true)),
+    async execute(interaction: { reply: (arg0: string) => any; options: any }) {
 
         type MemeResponse = {
-            success: boolean,
-            data: {
-                memes: Meme[]
-            }
-        }
-
-        type Meme = {
             id: number,
-            name: string,
-            url: string,
-            width: number,
-            height: number
-            box_count: number
+            created_at: string,
+            blob_url: string,
+            tags: string[],
         }
 
-        const memeList = await fetch('https://api.imgflip.com/get_memes')
-            .then(res => res.json())
-            .then(res => (res as MemeResponse).data.memes);
+        const tags: string[] = interaction.options.getString('tags');
 
-        const random = Math.floor(Math.random() * memeList.length);
+        const tagsAppendix = 'tags=' + tags.map(tag => '&tags=' + tag);
 
-        const selectedMeme = memeList[random];
+        console.log('tagAppendix', tagsAppendix);
 
-        const canvas = Canvas.createCanvas(selectedMeme.width, selectedMeme.height);
+        const response = await fetch(`https://next-picture-storage.vercel.app/memes/find?${tagsAppendix}`)
+            .then(res => res.json() as unknown as MemeResponse);
+
+        const canvas = Canvas.createCanvas(200, 200);
         const context = canvas.getContext('2d');
-        const background = await Canvas.loadImage(selectedMeme.url);
+        const background = await Canvas.loadImage(response.blob_url);
         // This uses the canvas dimensions to stretch the image onto the entire canvas
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
         // Use the helpful Attachment class structure to process the file for you
